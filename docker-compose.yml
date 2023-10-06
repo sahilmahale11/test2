@@ -1,0 +1,90 @@
+version: "3.8"
+services:
+
+  frontendservice:
+    image: '${DOCKER_FRONTENDSERVICE}'
+    container_name: '${DOCKER_FRONTENDSERVICE}'
+    restart: always
+
+  onboardingservice:
+    image: '${DOCKER_ONBOARDINGSERVICE}'
+    container_name: '${DOCKER_ONBOARDINGSERVICE}'
+    build:
+      context: ${PWD}/backend/src
+      dockerfile: onboardingservice/onboardingservice.dockerfile
+    restart: always
+
+  embeddingservice:
+    image: '${DOCKER_EMBEDDINGSERVICE}'
+    container_name: '${DOCKER_EMBEDDINGSERVICE}'
+    build:
+      context: ${PWD}/backend/src
+      dockerfile: embeddingservice/embeddingservice.dockerfile
+    volumes:
+      - ${PWD}/backend/src/embeddingservice/app/api:/app/app/api
+    restart: always
+
+  humaninloopservice:
+    image: '${DOCKER_HUMANINLOOPSERVICE}'
+    container_name: '${DOCKER_HUMANINLOOPSERVICE}'
+    build:
+      context: ${PWD}/backend/src
+      dockerfile: humaninloopservice/humaninloopservice.dockerfile
+    volumes:
+      - ${PWD}/backend/src/humaninloopservice/app/api:/app/app/api
+    restart: always
+
+  dashboardservice:
+    image: '${DOCKER_DASHBOARDSERVICE}'
+    container_name: '${DOCKER_DASHBOARDSERVICE}'
+    build:
+      context: ${PWD}/backend/src
+      dockerfile: dashboardservice/dashboardservice.dockerfile
+    volumes:
+      - ${PWD}/backend/src/dashboardservice/app/api:/app/app/api
+    restart: always
+
+  notificationmanagerservice:
+    image: '${DOCKER_NOTIFICATIONMANAGERSERVICE}'
+    container_name: '${DOCKER_NOTIFICATIONMANAGERSERVICE}'
+    build:
+      context: ${PWD}/backend/src
+      dockerfile: notificationmanagerservice/notificationmanagerservice.dockerfile
+    volumes:
+      - ${PWD}/backend/src/notificationmanagerservice/app/api:/app/app/api
+    restart: always
+
+  webhookservice:
+    image: '${DOCKER_WEBHOOKSERVICE}'
+    container_name: '${DOCKER_WEBHOOKSERVICE}'
+    build:
+      context: ${PWD}/backend/src
+      dockerfile: webhookservice/webhookservice.dockerfile
+    volumes:
+      - ${PWD}/backend/src/webhookservice/app/api:/app/app/api
+    restart: always
+
+  taskmanagerservice:
+    image: '${DOCKER_TASKMANAGERSERVICE}'
+    container_name: '${DOCKER_TASKMANAGERSERVICE}'
+    build:
+      context: ${PWD}/backend/src
+      dockerfile: taskmanagerservice/taskmanagerservice.dockerfile
+    restart: always
+
+  datamodeler:
+    image: '${DOCKER_DBMODELER}'
+    container_name: '${DOCKER_DBMODELER}'
+    build:
+      context: ${PWD}/backend/src
+      dockerfile: datamodeler/datamodeler.dockerfile
+    volumes:
+      - ${PWD}/backend/src/datamodeler/alembic/versions:/app/app/alembic/versions
+    restart: always
+
+  redis:
+    image: redis/redis-stack:latest
+    container_name: '${DOCKER_REDIS}'
+    environment:
+      REDIS_ARGS: "--requirepass ${REDIS_HOST_PASSWORD}"
+    restart: always

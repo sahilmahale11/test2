@@ -1,0 +1,249 @@
+openapi: 3.0.3
+info:
+  title: Enviate API - DASHBOARD SERVICE
+  description: |-
+    Enviate offers a web application that streamlines the linkage between business/product needs and software development. By establishing an automated, bidirectional connection between requirements and software development, organizations can implement real-time checks to ensure that the software aligns with the specified requirements and that the requirements accurately mirror the present state of the code.
+    This is a sample API with various endpoints for user onboarding.
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: foo@enviate.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+servers:
+  - url: http://localhost/api/v1
+tags:
+  - name: dashboard
+    description: API to fetch a dashboard of PR and requirements with their scores for code and requirements descriptions.
+paths:
+  /dashboard/requirement/{project_id}:
+    get:
+      summary: Get Requirement Dashboard
+      description: Retrieve the requirement dashboard for the specified project.
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      responses:
+        '200':
+          description: Success
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequirementDashboardResponse'
+  
+  /dashboard/pr/{repo_id}:
+    get:
+      summary: Get Pull Request Dashboard
+      description: Retrieve the pull request dashboard for the specified repository.
+      operationId: get_pull_request_dashboard
+      parameters:
+        - $ref: '#/components/parameters/RepoId'
+      responses:
+        '200':
+          description: Success
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PullRequestDashboardResponse'
+  
+  /dashboard/pr/{pr_id}:
+    get:
+      summary: Get Pull Request Details
+      description: Retrieve the details of the specified pull request.
+      operationId: get_pull_request_details
+      parameters:
+         - $ref: '#/components/parameters/PRId'
+      responses:
+        '200':
+          description: Success
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PullRequestDetails'
+
+  /dashboard/action/user:
+    post:
+      summary: User Action on Pull Request
+      description: Perform an action on a pull request.
+      operationId: user_action_on_pull_request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PRUserActionRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseMessage'
+  
+  
+components:
+  schemas:
+    Issue:
+      type: object
+      properties:
+        issue_id:
+          type: integer
+          description: ID of the issue.
+        issue_title:
+          type: string
+          description: Name of the issue.
+        issue_description:
+          type: string
+          description: Description of the issue.
+        issue_type:
+          type: string
+          description: Type of the issue.
+        url_path:
+          type: string
+          description: URL path to the issue.
+        completion_score:
+          type: number
+          format: float
+          description: Score of the issue.
+        child_issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Issue'
+
+    RequirementDashboardResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/Issue'
+        
+    PullRequest:
+      type: object
+      properties:
+        pr_id:
+          type: integer
+          description: ID of the pull request.
+        pr_name:
+          type: string
+          description: Name of the pull request.
+        run_id:
+          type: integer
+          description: Latest run ID of the pull request.
+        branch_name:
+          type: string
+          description: Name of the branch associated with the pull request.
+        completion_score:
+          type: number
+          format: float
+          description: Completion score of the pull request.
+
+    PullRequestDashboardResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/PullRequest'
+
+    RunDetails:
+      type: object
+      properties:
+        run_id:
+          type: integer
+          description: ID of the run.
+        completion_score:
+          type: number
+          format: float
+          description: Completion score of the run.
+        files:
+          type: string
+          description: Files associated with the run.
+        content:
+          type: string
+          description: Content of the run.
+
+    PullRequestDetails:
+      type: object
+      properties:
+        pr_id:
+          type: integer
+          description: ID of the pull request.
+        pr_name:
+          type: string
+          description: Name of the pull request.
+        branch_name:
+          type: string
+          description: Name of the branch associated with the pull request.
+        runs:
+          type: array
+          items:
+            $ref: '#/components/schemas/RunDetails'
+    
+    PRUserActionRequest:
+      type: object
+      properties:
+        pr_id:
+          type: integer
+          description: ID of the pull request.
+        action:
+          type: string
+          description: Action to be performed on the pull request
+          enum: ["jira update", "jira create"]
+    
+    ResponseMessage:
+      type: object
+      title: ResponseMessage
+      properties:
+        message:
+          type: string
+          description: ResponseMessage
+            
+  parameters:
+    RepoId:
+      name: repo_id
+      in: path
+      description: The ID of the GitHub repository.
+      required: true
+      schema:
+        type: integer
+
+    ProjectId:
+      name: project_id
+      in: path
+      description: The ID of the JIRA project.
+      required: true
+      schema:
+        type: integer
+    
+    PRId:
+      name: pr_id
+      in: path
+      description: The ID of a PR.
+      required: true
+      schema:
+        type: integer

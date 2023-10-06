@@ -1,0 +1,7 @@
+{
+    "sentence_transformer": {
+        "input_token_limit": 384,
+        "output_embedding_limit": 768,
+        "chunk_overlap": 0
+    }
+}

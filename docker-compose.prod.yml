@@ -1,0 +1,146 @@
+version: "3.8"
+services:
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ${PWD}/nginx/prod/nginx-prod.conf:/etc/nginx/nginx.conf
+      - ${PWD}/nginx/prod/ssl-prod.crt:/etc/nginx/ssl.crt
+      - ${PWD}/nginx/prod/ssl-prod.key:/etc/nginx/ssl.key
+    depends_on:
+      - frontendservice
+      - onboardingservice
+      - embeddingservice
+      - humaninloopservice
+      - dashboardservice
+      - notificationmanagerservice
+      - webhookservice
+      - taskmanagerservice
+    networks:
+      - ${DOCKER_BRIDGE_PROD}
+    restart: always
+
+  frontendservice:
+    build:
+      context: ./frontend
+      dockerfile: ./prod.frontend.dockerfile
+    stdin_open: true
+    env_file:
+      - .env-prod
+    networks:
+      - ${DOCKER_BRIDGE_PROD}
+      
+  onboardingservice:
+    ports:
+      - "3000:80"
+    # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
+    command: bash -c "./app/common/start.sh & celery -A app.celery_app worker --loglevel=info --concurrency=$CELERY_WORKER" &
+    env_file:
+      - .env-prod
+    networks:
+      - ${DOCKER_BRIDGE_PROD}
+      
+  embeddingservice:
+    ports:
+      - "3001:80"
+    # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
+    command: bash -c "./app/common/start.sh & celery -A app.celery_app worker --loglevel=info --concurrency=$CELERY_WORKER" &
+    env_file:
+      - .env-prod
+    networks:
+      - ${DOCKER_BRIDGE_PROD}
+      
+  humaninloopservice:
+    ports:
+      - "3002:80"
+    # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
+    command: bash -c "./app/common/start.sh & celery -A app.celery_app worker --loglevel=info --concurrency=$CELERY_WORKER" &
+    env_file:
+      - .env-prod
+    networks:
+      - ${DOCKER_BRIDGE_PROD}
+      
+  dashboardservice:
+    ports:
+      - "3003:80"
+    # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
+    command: bash -c "./app/common/start.sh & celery -A app.celery_app worker --loglevel=info --concurrency=$CELERY_WORKER" &
+    env_file:
+      - .env-prod
+    networks:
+      - ${DOCKER_BRIDGE_PROD}
+      
+  notificationmanagerservice:
+    ports:
+      - "3004:80"
+    # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
+    command: bash -c "./app/common/start.sh & celery -A app.celery_app worker --loglevel=info --concurrency=$CELERY_WORKER" &
+    env_file:
+      - .env-prod
+    networks:
+      - ${DOCKER_BRIDGE_PROD}
+      
+  webhookservice:
+    ports:
+      - "3005:80"
+    # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
+    command: bash -c "./app/common/start.sh & celery -A app.celery_app worker --loglevel=info --concurrency=$CELERY_WORKER" &
+    env_file:
+      - .env-prod
+    networks:
+      - ${DOCKER_BRIDGE_PROD}
+      
+  taskmanagerservice:
+    ports:
+      - "3006:80"
+    # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
+    command: ./app/common/start.sh
+    env_file:
+      - .env-prod
+    networks:
+      - ${DOCKER_BRIDGE_PROD}
+      
+  datamodeler:
+    #Run the following command when you make edits to anything in the 'models.py'.
+    #command: bash -c "alembic revision --autogenerate -m 'Init' && alembic upgrade head && while true; do sleep 1; done"
+    command: bash -c "alembic upgrade head && while true; do sleep 1; done"
+    env_file:
+      - .env-prod
+    networks:
+      - ${DOCKER_BRIDGE_PROD}
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: '${DOCKER_PGADMIN}'
+    ports:
+      - "5050:5050"
+    env_file:
+      - .env-prod
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - ${DOCKER_BRIDGE_PROD}
+    restart: always
+
+  redis:
+    ports:
+      - "6379:6379"
+    env_file:
+      - .env-prod
+    volumes:
+      - redis-data:/data
+    networks:
+      - ${DOCKER_BRIDGE_PROD}
+
+volumes:
+  pgadmin-data: {}
+  redis-data:
+
+networks:
+  enviate-bridge-production:
+    name: ${DOCKER_BRIDGE_PROD}
+    driver: bridge

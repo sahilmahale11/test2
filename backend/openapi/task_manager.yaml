@@ -1,0 +1,152 @@
+openapi: 3.0.3
+info:
+  title: Enviate API - TASK MANAGER SERVICE
+  description: |-
+    Enviate offers a web application that streamlines the linkage between business/product needs and software development. By establishing an automated, bidirectional connection between requirements and software development, organizations can implement real-time checks to ensure that the software aligns with the specified requirements and that the requirements accurately mirror the present state of the code.
+    This is a sample API with various endpoints for user onboarding.
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: foo@enviate.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+servers:
+  - url: http://localhost/api/v1
+tags:
+  - name: task
+    description: API to manage tasks
+paths:
+  /tasks:
+    get:
+      tags:
+        - task
+      summary: List All Celery Tasks
+      description: Retrieve a list of all Celery tasks.
+      operationId: list_tasks
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CeleryTaskDetailsResponse'
+    post:
+      tags:
+        - task
+      summary: Add Celery Task
+      description: Add a new Celery task.
+      operationId: create_task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CeleryTaskDetailsRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CeleryTaskDetailsResponse'
+
+  /tasks/{task_id}:
+    get:
+      tags:
+        - task
+      summary: Get Celery Task Details
+      description: Retrieve details of a Celery task by its ID.
+      operationId: read_task
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CeleryTaskDetailsResponse'
+
+    patch:
+      tags:
+        - task
+      summary: Update Celery Task
+      description: Update an existing Celery task's status.
+      operationId: update_task
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CeleryTaskUpdateRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CeleryTaskDetailsResponse'
+
+
+
+components:
+  schemas:
+    CeleryTaskDetailsRequest:
+      type: object
+      required:
+        - task_id
+        - task_name
+      properties:
+        task_id:
+          type: string
+          description: ID of the Celery task.
+          nullable: false
+          minLength: 1 
+        task_name:
+          type: string
+          description: Name of the celery task
+          nullable: false
+          minLength: 1 
+
+    CeleryTaskUpdateRequest:
+      type: object
+      properties:
+        task_status:
+          $ref: '#/components/schemas/Status'
+
+    CeleryTaskDetailsResponse:
+      allOf:
+        - $ref: '#/components/schemas/CeleryTaskDetailsRequest'
+        - type: object
+          properties:
+            task_status:
+              $ref: '#/components/schemas/Status'
+            creation_time:
+              type: string
+              format: date-time
+              description: Date and time when the Celery task was created.
+            updation_time:
+              type: string
+              format: date-time
+              description: Date and time when the Celery task was completed.
+
+    Status:
+      type: string
+      enum:
+        - INPROGRESS
+        - SUCCESS
+        - FAILED
+
+  parameters:
+    TaskId:
+      name: task_id
+      in: path
+      description: The id of the task.
+      required: true
+      schema:
+        type: string

@@ -1,0 +1,220 @@
+version: "3.8"
+services:
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "0.0.0.0:80:80"
+    volumes:
+      - ${PWD}/nginx/dev/nginx-dev.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - frontendservice
+      - onboardingservice
+      - embeddingservice
+      - humaninloopservice
+      - dashboardservice
+      - notificationmanagerservice
+      - webhookservice
+      - taskmanagerservice
+    networks:
+      - ${DOCKER_BRIDGE_DEV}
+    restart: always
+
+  frontendservice:
+    build:
+      context: ./frontend
+      dockerfile: ./dev.frontend.dockerfile
+    volumes:
+      - ${PWD}/frontend/src:/app/src
+      - ${PWD}/frontend/public:/app/public
+      - ${PWD}/frontend/index.html:/app/index.html
+    stdin_open: true
+    env_file:
+      - .env-dev
+    environment:
+      - VITE_DEBUG=true
+      - CHOKIDAR_USEPOLLING=true
+    networks:
+      - ${DOCKER_BRIDGE_DEV}
+
+  onboardingservice:
+    ports:
+      - "3000:80"
+    volumes:
+      - ${PWD}/backend/src/onboardingservice/app/api:/app/app/api
+      - ${PWD}/backend/src/onboardingservice/app/main.py:/app/app/main.py
+      - ${PWD}/backend/src/onboardingservice/app/crud.py:/app/app/crud.py
+      - ${PWD}/backend/src/onboardingservice/app/schema.py:/app/app/schema.py
+      - ${PWD}/backend/src/onboardingservice/app/messages.py:/app/app/messages.py
+      - ${PWD}/backend/src/onboardingservice/app/task.py:/app/app/task.py
+    # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
+    command: bash -c "./app/common/start-reload.sh & celery -A app.celery_app worker --loglevel=info --concurrency=$CELERY_WORKER" &
+    env_file:
+      - .env-dev
+    depends_on:
+      - postgresdb
+      - redis
+    networks:
+      - ${DOCKER_BRIDGE_DEV}
+
+  embeddingservice:
+    ports:
+      - "3001:80"
+    volumes:
+      - ${PWD}/backend/src/embeddingservice/app/api:/app/app/api
+      - ${PWD}/backend/src/embeddingservice/app/main.py:/app/app/main.py
+      - ${PWD}/backend/src/embeddingservice/app/crud.py:/app/app/crud.py
+      - ${PWD}/backend/src/embeddingservice/app/schema.py:/app/app/schema.py
+      - ${PWD}/backend/src/embeddingservice/app/messages.py:/app/app/messages.py
+      - ${PWD}/backend/src/embeddingservice/app/task.py:/app/app/task.py
+      - ${PWD}/backend/src/embeddingservice/app/model_config.json:/app/app/model_config.json
+    # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
+    command: bash -c "./app/common/start-reload.sh & celery -A app.celery_app worker --loglevel=info --concurrency=$CELERY_WORKER" &
+    env_file:
+      - .env-dev
+    depends_on:
+      - postgresdb
+      - redis
+    networks:
+      - ${DOCKER_BRIDGE_DEV}
+
+  humaninloopservice:
+    ports:
+      - "3002:80"
+    volumes:
+      - ${PWD}/backend/src/humaninloopservice/app/api:/app/app/api
+      - ${PWD}/backend/src/humaninloopservice/app/main.py:/app/app/main.py
+      - ${PWD}/backend/src/humaninloopservice/app/crud.py:/app/app/crud.py
+      - ${PWD}/backend/src/humaninloopservice/app/schema.py:/app/app/schema.py
+      - ${PWD}/backend/src/humaninloopservice/app/messages.py:/app/app/messages.py
+      - ${PWD}/backend/src/humaninloopservice/app/task.py:/app/app/task.py
+    # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
+    command: bash -c "./app/common/start-reload.sh & celery -A app.celery_app worker --loglevel=info --concurrency=$CELERY_WORKER" &
+    env_file:
+      - .env-dev
+    depends_on:
+      - postgresdb
+      - redis
+    networks:
+      - ${DOCKER_BRIDGE_DEV}
+
+  dashboardservice:
+    ports:
+      - "3003:80"
+    # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
+    command: bash -c "./app/common/start-reload.sh & celery -A app.celery_app worker --loglevel=info --concurrency=$CELERY_WORKER" &
+    env_file:
+      - .env-dev
+    depends_on:
+      - postgresdb
+      - redis
+    networks:
+      - ${DOCKER_BRIDGE_DEV}
+
+  notificationmanagerservice:
+    ports:
+      - "3004:80"
+    # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
+    command: bash -c "./app/common/start-reload.sh & celery -A app.celery_app worker --loglevel=info --concurrency=$CELERY_WORKER" &
+    env_file:
+      - .env-dev
+    depends_on:
+      - postgresdb
+      - redis
+    networks:
+      - ${DOCKER_BRIDGE_DEV}
+
+  webhookservice:
+    ports:
+      - "3005:80"
+    # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
+    command: bash -c "./app/common/start-reload.sh & celery -A app.celery_app worker --loglevel=info --concurrency=$CELERY_WORKER" &
+    env_file:
+      - .env-dev
+    depends_on:
+      - postgresdb
+      - redis
+    networks:
+      - ${DOCKER_BRIDGE_DEV}
+
+  taskmanagerservice:
+    ports:
+      - "3006:80"
+    volumes:
+      - ${PWD}/backend/src/taskmanagerservice/app/api:/app/app/api
+      - ${PWD}/backend/src/taskmanagerservice/app/main.py:/app/app/main.py
+      - ${PWD}/backend/src/taskmanagerservice/app/crud.py:/app/app/crud.py
+      - ${PWD}/backend/src/taskmanagerservice/app/schema.py:/app/app/schema.py
+      - ${PWD}/backend/src/taskmanagerservice/app/messages.py:/app/app/messages.py
+    # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
+    command: ./app/common/start-reload.sh
+    env_file:
+      - .env-dev
+    depends_on:
+      - postgresdb
+      - redis
+    networks:
+      - ${DOCKER_BRIDGE_DEV}
+
+  datamodeler:
+    #Run the following command when you make edits to anything in the 'models.py'.
+    # command: bash -c "alembic revision --autogenerate -m 'Initial DB' && alembic upgrade head && while true; do sleep 1; done"
+    command: bash -c "alembic upgrade head && while true; do sleep 1; done"
+    env_file:
+      - .env-dev
+    depends_on:
+      - postgresdb
+    networks:
+      - ${DOCKER_BRIDGE_DEV}
+
+  postgresdb:
+    image: postgres:15
+    container_name: '${DOCKER_POSTGRESDB}'
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env-dev
+    volumes:
+      - postgresdb-data:/var/lib/postgresql/data/pgdata
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    networks:
+      - ${DOCKER_BRIDGE_DEV}
+    restart: always
+      
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: '${DOCKER_PGADMIN}'
+    ports:
+      - "5050:5050"
+    env_file:
+      - .env-dev
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - postgresdb
+    networks:
+      - ${DOCKER_BRIDGE_DEV}
+    restart: always
+
+  redis:
+    ports:
+      - "6379:6379" #Redis
+      - "8001:8001" #RedisInsight
+    env_file:
+      - .env-dev
+    volumes:
+      - redis-data:/data
+    networks:
+      - ${DOCKER_BRIDGE_DEV}
+
+volumes:
+  postgresdb-data: {}
+  pgadmin-data: {}
+  redis-data:
+
+networks:
+  enviate-bridge-development:
+    name: ${DOCKER_BRIDGE_DEV}
+    driver: bridge

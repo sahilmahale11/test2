@@ -1,0 +1,56 @@
+openapi: 3.0.3
+info:
+  title: Enviate API - CODE PROCESSING SERVICE
+  description: |-
+    Enviate offers a web application that streamlines the linkage between business/product needs and software development. By establishing an automated, bidirectional connection between requirements and software development, organizations can implement real-time checks to ensure that the software aligns with the specified requirements and that the requirements accurately mirror the present state of the code.
+    This is a sample API with various endpoints for code processing and generating results.
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: foo@enviate.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+servers:
+  - url: http://localhost/api/v1
+tags:
+  - name: code
+    description: API for processing code and generating results.
+paths:
+  /code/initiate:
+    post:
+      tags:
+        - code
+      summary: Code Breakdown
+      description: Code breakdown involves the initial step of decomposing the script into smaller, self-contained functions and classes.
+      operationId: start_code_breakdown
+      parameters:
+        - $ref: '#/components/parameters/UserRepoInfoId'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseMessage'
+      
+      
+components:
+  schemas:
+    
+    ResponseMessage:
+      type: object
+      title: ResponseMessage
+      properties:
+        message:
+          type: string
+          description: ResponseMessage
+  
+  parameters:
+    UserRepoInfoId:
+      name: user_repo_info_id
+      in: query
+      description: The user_repo_info_id of a GitHub repository saved in the database.
+      required: true
+      schema:
+        type: number

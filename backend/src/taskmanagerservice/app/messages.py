@@ -1,0 +1,5 @@
+ERROR_CREATE_TASK = "Error creating task"
+TASK_ID_NOT_FOUND = "Task ID not found"
+TASK_ID_ALREADY_EXISTS = "Task ID already exists"
+TASK_NAME_ALREADY_EXISTS = "Task Name already exists"
+TASK_ID_AND_TASK_NAME_CANNOT_BE_EQUAL = "Task ID and Task name cannot be equal."

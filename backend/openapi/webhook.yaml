@@ -1,0 +1,67 @@
+openapi: 3.0.3
+info:
+  title: Enviate API - DASHBOARD SERVICE
+  description: |-
+    Enviate offers a web application that streamlines the linkage between business/product needs and software development. By establishing an automated, bidirectional connection between requirements and software development, organizations can implement real-time checks to ensure that the software aligns with the specified requirements and that the requirements accurately mirror the present state of the code.
+    This is a sample API with various endpoints for user onboarding.
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: foo@enviate.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+servers:
+  - url: http://localhost/api/v1
+tags:
+  - name: dashboard
+    description: API to fetch a dashboard of PR and requirements with their scores for code and requirements descriptions.
+paths:
+  /webhook/github/pr:
+    post:
+      summary: GitHub Pull Request Webhook
+      description: Receive webhook events from GitHub when a pull request is raised.
+      operationId: github_pull_request_webhook
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseMessage'
+  
+  /api/v1/webhook/github/pr/merge:
+    post:
+      summary: GitHub Pull Request Merge Webhook
+      description: Receive webhook events from GitHub when a pull request is merged.
+      operationId: github_pull_request_merge_webhook
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseMessage'
+                    
+  /api/v1/webhook/jira/issue:
+    post:
+      summary: JIRA Issue Webhook
+      description: Receive webhook events from JIRA when an issue is created or updated.
+      operationId: jira_issue_webhook
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseMessage'
+  
+components:
+  schemas:
+    ResponseMessage:
+      type: object
+      title: ResponseMessage
+      properties:
+        message:
+          type: string
+          description: ResponseMessage

@@ -1,0 +1,769 @@
+openapi: 3.0.3
+info:
+  title: Enviate API - ONBOARDING SERVICE
+  description: |-
+    Enviate offers a web application that streamlines the linkage between business/product needs and software development. By establishing an automated, bidirectional connection between requirements and software development, organizations can implement real-time checks to ensure that the software aligns with the specified requirements and that the requirements accurately mirror the present state of the code.
+    This is a sample API with various endpoints for user onboarding.
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: foo@enviate.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+servers:
+  - url: http://localhost/api/v1
+tags:
+  - name: onboarding
+    description: Endpoints related to user onboarding and account setup.
+paths:
+  /onboarding/sign_up:
+    post:
+      tags:
+        - onboarding
+      summary: Sign Up
+      description: 'Signup for the new user'
+      operationId: sign_up
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+  
+  /onboarding/sign_in:
+    post:
+      tags:
+        - onboarding
+      summary: Sign In
+      description: Authenticate a user and generate an access token.
+      operationId: sign_in
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInRequest'
+      responses:
+        '200':
+          description: Successful Response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+  
+  /onboarding/user/data:
+    get:
+      tags:
+        - onboarding
+      summary: Get user data
+      description: Get user details for profile
+      operationId: get_user_data
+      responses:
+        '200':
+          description: Successful Response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDataResponse'
+  
+  /onboarding/logout:
+    post:
+      tags:
+        - onboarding
+      summary: Logout
+      description: Perform user logout
+      operationId: user_logout
+      responses:
+        '200':
+          description: Success
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseMessage'
+  
+  /onboarding/github/oauth_callback:
+    get:
+      tags:
+        - onboarding
+      summary: GitHub OAuth Callback
+      description: Process the GitHub OAuth callback and receive the access code.
+      operationId: github_oauth_callback
+      parameters:
+        - $ref: '#/components/parameters/AccessCode'
+      responses:
+        '200':
+          description: Success
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseMessage'
+                    
+  /onboarding/jira/oauth_callback:
+    get:
+      tags:
+        - onboarding
+      summary: Jira OAuth Callback
+      description: Process the Jira OAuth callback and receive the access code.
+      operationId: jira_oauth_callback
+      parameters:
+        - $ref: '#/components/parameters/AccessCode'
+      responses:
+        '200':
+          description: Success
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseMessage'
+  
+  /onboarding/github/repositories:
+    get:  
+      tags:
+        - onboarding
+      summary: List GitHub Repositories
+      description: Retrieve a list of GitHub repositories of a user
+      operationId: list_github_repositories
+      responses:
+        '200':
+          description: Successful Response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GitHubRepository'
+  
+  /onboarding/jira/projects:
+    get:
+      tags:
+        - onboarding
+      summary: List Jira Projects
+      description: Retrieve a list of Jira projects of a user
+      operationId: list_jira_projects
+      responses:
+        '200':
+          description: Successful Response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JiraProject'
+                
+  /onboarding/github/{owner_name}/{repo_name}/branches:
+    get:
+      tags:
+        - onboarding
+      summary: List GitHub Branches
+      description: Retrieve a list of branches for a specific GitHub repository.
+      operationId: list_github_branches
+      parameters:
+        - $ref: '#/components/parameters/OwnerName'
+        - $ref: '#/components/parameters/RepoName'
+      responses:
+        '200':
+          description: Successful Response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GitHubBranchResponse'
+  
+  /onboarding/github/repository:
+    post:
+      tags:
+        - onboarding
+      summary: Select Github Repo
+      description: Save the details of github repository selected by the user 
+      operationId: select_github_repository
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SelectGitHubRepositoryRequest'
+      responses:
+        '200':
+          description: Success
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SelectGithubRepositoryResponse'
+                    
+  /onboarding/jira/project:
+    post:
+      tags:
+        - onboarding
+      summary: Select Jira Project
+      description: Save the details of Jira project selected by the user
+      operationId: select_jira_project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SelectJiraProjectRequest'
+      responses:
+        '200':
+          description: Success
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SelectJiraProjectResponse'
+  
+  /onboarding/user/connections:
+    get:
+      tags:
+        - onboarding
+      summary: Get user connections
+      description: Get details of user's Github and Jira connections
+      operationId: get_user_connections
+      responses:
+        '200':
+          description: Successful Response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserConnectionResponse'
+  
+  /onboarding/github/repo/status:
+    post:
+      tags:
+        - onboarding
+      summary: Set GitHub Repository Status
+      description: Set the status of a GitHub repository
+      operationId: set_github_repo_status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GitHubRepoStatus'
+      responses:
+        '200':
+          description: Success
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseMessage'
+              
+  /api/v1/onboarding/jira/project/status:
+    post:
+      tags:
+        - onboarding
+      summary: Set Jira Project Status
+      description: Set the status of a Jira project.
+      operationId: set_jira_project_status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JiraProjectStatus'
+      responses:
+        '200':
+          description: Success
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseMessage'
+                    
+  /api/v1/onboarding/linkage/status:
+    post:
+      tags:
+        - onboarding
+      summary: Set Linkage Status
+      description: Set the linkage status of a Github Repo and Jira project.
+      operationId: set_linkage_status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LinkageStatusRequest'
+      responses:
+        '200':
+          description: Success
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseMessage'
+  
+components:
+  schemas:
+    SignUpRequest:
+      type: object
+      title: SignUpRequest
+      required:
+        - first_name
+        - last_name
+        - email
+        - password
+      properties:
+        first_name:
+          type: string
+          description: First Name
+          minLength: 1
+        last_name:
+          type: string
+          description: Last Name
+          minLength: 1
+        email:
+          type: string
+          format: email
+          description: Email
+        password:
+          type: string
+          description: Password
+          minLength: 1
+        organization:
+          type: string
+          description: Organization
+
+    TokenResponse:
+      type: object
+      title: TokenResponse
+      properties:
+        token:
+          type: string
+          description: JWT Token
+        token_type:
+          type: string
+          description: Token Type
+        jira_authorized:
+          type: boolean
+          default: false
+          description: Jira Authorized
+        github_authorized:
+          type: boolean
+          default: false
+          description: GitHub Authorized
+        linkage_status:
+          $ref: '#/components/schemas/LinkageStatus'
+
+    SignInRequest:
+      type: object
+      title: SignInRequest
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: email of the user
+        password:
+          type: string
+          description: password
+          minLength: 1
+    
+    UserDataResponse:
+      type: object
+      properties:
+        first_name:
+          type: string
+          description: First Name
+        last_name:
+          type: string
+          description: Last Name
+        organization:
+          type: string
+          description: Organization
+        github_authorized:
+          type: boolean
+          default: false
+          description: GitHub Authorized
+        jira_authorized:
+          type: boolean
+          default: false
+          description: Jira Authorized
+    
+    ResponseMessage:
+      type: object
+      title: ResponseMessage
+      properties:
+        message:
+          type: string
+          description: ResponseMessage
+          
+    GitHubRepository:
+      type: object
+      properties:
+        repo_id:
+          type: string
+          description: ID of the repository from GitHub.
+        owner_name:
+          type: string
+          description: Owner name of the repository.
+        repo_name:
+          type: string
+          description: Name of the repository.
+        
+    JiraProject:
+      type: object
+      properties:
+        project_id:
+          type: string
+          description: ID of the Jira project.
+        project_name:
+          type: string
+          description: Name of the Jira project.
+        project_key:
+          type: string
+          description: Key of the Jira project.
+    
+    GitHubBranchResponse:
+      type: object
+      properties:
+        owner_name:
+          type: string
+          description: Owner name of the repository.
+        repo_name:
+          type: string
+          description: Name of the repository.
+        branches:
+          type: array
+          items:
+            type: string
+            description: Name of the branch.
+    
+    SelectGitHubRepositoryRequest:
+      type: object
+      required:
+        - repo_id
+        - owner_name
+        - repo_name
+        - branch_name
+      properties:
+        repo_id:
+          type: string
+          description: Id of the Github Repository
+          minLength: 1
+        owner_name:
+          type: string
+          description: Owner name of the GitHub repository.
+          minLength: 1
+        repo_name:
+          type: string
+          description: Name of the GitHub repository.
+          minLength: 1
+        branch_name:
+          type: string
+          description: Name of the branch.
+          minLength: 1
+    
+    SelectGithubRepositoryResponse:
+      type: object
+      properties:
+        github_authorized:
+          type: boolean
+          default: false
+          description: GitHub Authorized
+        message:
+          type: string
+          description: ResponseMessage  
+    
+    SelectJiraProjectRequest:
+      type: object
+      required:
+        - project_id
+        - project_name
+        - project_key
+      properties:
+        project_id:
+          type: string
+          description: The projectID of the JIRA project
+          minLength: 1
+        project_name:
+          type: string
+          description: Name of the Jira project.
+          minLength: 1
+        project_key:
+          type: string
+          description: Key of the Jira project.
+          minLength: 1
+    
+    SelectJiraProjectResponse:
+      type: object
+      properties:
+        jira_authorized:
+          type: boolean
+          default: false
+          description: Jira Authorized
+        message:
+          type: string
+          description: ResponseMessage
+    
+    UserRepoDetails:
+      type: object
+      properties:
+        user_repo_info_id:
+          type: string
+          description: The ID of the user repository.
+        repo_id:
+          type: string
+          description: The github ID of the repository.
+        owner_name:
+          type: string
+          description: The owner of the repository.
+        repo_name:
+          type: string
+          description: The name of the repository.
+    
+    UserProjectDetails:
+      type: object
+      properties:
+        user_project_info_id:
+          type: string
+          description: The ID of the user project.
+        project_id:
+          type: string
+          description: The jira ID of the project.
+        project_name:
+          type: string
+          description: The name of the project.
+        project_key:
+          type: string
+          description: The key associated with the project.
+    
+    UserConnectionResponse:
+      type: object
+      properties:
+        github_authorized:
+          type: boolean
+          default: false
+          description: GitHub Authorized
+        repo_details:
+          $ref: '#/components/schemas/UserRepoDetails'
+        jira_authorized:
+          type: boolean
+          default: false
+          description: Jira Authorized
+        project_details:
+          $ref: '#/components/schemas/UserProjectDetails'
+      
+    GitHubRepoStatus:
+      type: object
+      properties:
+        user_repo_info_id:
+          type: string
+          description: The user_repo_info_id of a GitHub repository saved in database.
+        status:
+          type: string
+          description: status of the repo
+    
+    JiraProjectStatus:
+      type: object
+      properties:
+        user_project_info_id:
+          type: string
+          description: The user_project_info_id of a JIRA project saved in database.
+        status:
+          type: string
+          description: status of the project
+          
+    LinkageStatusRequest:
+      type: object
+      properties:
+        user_repo_info_id:
+          type: string
+          description: The user_repo_info_id of a GitHub repository saved in database.
+        user_project_info_id:
+          type: string
+          description: The user_project_info_id of a JIRA project saved in database.
+        linkage_status:
+          type: string
+          description: linkage status of the repo and project
+    
+    LinkageStatus:
+      title: Linkage status
+      type: string
+      enum: 
+        - NOT_STARTED
+        - INITIATED
+        - AWAITING_VALIDATION
+        - FAILED
+        - UNSUPPORTED
+        - SUPPORTED
+        - COMPLETE
+    
+    
+  parameters:
+    AccessCode:
+      name: access_code
+      in: query
+      description: The access code received from OAuth callback.
+      required: true
+      schema:
+        type: string
+    
+    OwnerName:
+      name: owner_name
+      in: path
+      description: The owner name of the GitHub repository.
+      required: true
+      schema:
+        type: string
+
+    RepoName:
+      name: repo_name
+      in: path
+      description: The name of the GitHub repository.
+      required: true
+      schema:
+        type: string

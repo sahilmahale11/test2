@@ -1,0 +1,10 @@
+{
+  "logger": {
+    "api_access_path": "/var/log/enviate/access.log",
+    "api_error_path": "/var/log/enviate/error.log",
+    "api_name": "api",
+    "rotation": "5 MB",
+    "retention": "10",
+    "format": "<level>{level:8}</level> <green>{time:YYYY-MM-DD HH:mm:ss}</green> |<magenta> {extra[logname]} </magenta>| <blue>ENVIATE</blue>:<cyan>{name}</cyan>:<red>{function}</red>:<green>{line}</green>:: <level>{message}</level>"
+  }
+}
